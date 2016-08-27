@@ -40,13 +40,13 @@ class BKTree:
         self.tree = (root, {})
 
         for i in it:
-            self._add_word(self.tree, i)
+            self.add_word(self.tree, i)
 
-    def _add_word(self, parent, word):
+    def add_word(self, parent, word):
         pword, children = parent
         d = self.distfn(word, pword)
         if d in children:
-            self._add_word(children[d], word)
+            self.add_word(children[d], word)
         else:
             children[d] = (word, {})
 
