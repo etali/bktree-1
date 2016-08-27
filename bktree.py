@@ -22,16 +22,15 @@ class BKTree:
         """
         Create a new BK-tree from the given distance function and
         words.
-        
+
         Arguments:
 
         distfn: a binary function that returns the distance between
         two words.  Return value is a non-negative integer.  the
         distance function must be a metric space.
-        
+
         words: an iterable.  produces values that can be passed to
         distfn
-        
         """
         self.distfn = distfn
 
@@ -53,18 +52,17 @@ class BKTree:
     def query(self, word, n):
         """
         Return all words in the tree that are within a distance of `n'
-        from `word`.  
+        from `word`.
 
         Arguments:
-        
+
         word: a word to query on
 
         n: a non-negative integer that specifies the allowed distance
-        from the query word.  
-        
+        from the query word.
+
         Return value is a list of tuples (distance, word), sorted in
         ascending order of distance.
-        
         """
         def rec(parent):
             pword, children = parent
@@ -72,7 +70,7 @@ class BKTree:
             results = []
             if d <= n:
                 results.append( (d, pword) )
-                
+
             for i in range(d-n, d+n+1):
                 child = children.get(i)
                 if child is not None:
@@ -81,7 +79,6 @@ class BKTree:
 
         # sort by distance
         return sorted(rec(self.tree))
-    
 
 
 def brute_query(word, words, distfn, n):
