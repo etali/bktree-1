@@ -16,7 +16,6 @@ Licensed under the PSF license: http://www.python.org/psf/license/
 """
 from itertools import imap, ifilter
 
-
 class BKTree:
     def __init__(self, distfn, words):
         """
@@ -49,7 +48,7 @@ class BKTree:
         else:
             children[d] = (word, {})
 
-    def query(self, word, n):
+    def query(self, word, n, max_num):
         """
         Return all words in the tree that are within a distance of `n'
         from `word`.
@@ -61,25 +60,36 @@ class BKTree:
         n: a non-negative integer that specifies the allowed distance
         from the query word.
 
+        max_num: maximum return, 0 - there is no limitation.
+
         Return value is a list of tuples (distance, word), sorted in
         ascending order of distance.
         """
+        ret_list = []
         def rec(parent):
             pword, children = parent
             d = self.distfn(word, pword)
-            results = []
+            # results = []
             if d <= n:
-                results.append( (d, pword) )
+                ret_list.append(pword)
+                if max_num != 0 and len(ret_list) >= max_num:
+                    return True
+                # results.append( (d, pword) )
 
             for i in range(d-n, d+n+1):
                 child = children.get(i)
                 if child is not None:
-                    results.extend(rec(child))
-            return results
+                    if rec(child):
+                        return True
+            return False
+
+                    # results.extend(rec(child))
+            #return results
 
         # sort by distance
-        return sorted(rec(self.tree))
-
+        rec(self.tree)
+        return ret_list
+        # return sorted(rec(self.tree))
 
 def brute_query(word, words, distfn, n):
     """A brute force distance query
@@ -101,11 +111,11 @@ def brute_query(word, words, distfn, n):
 
 
 def maxdepth(tree, count=0):
-    _, children = t
+    _, children = tree
     if len(children):
-        return max(maxdepth(i, c+1) for i in children.values())
+        return max(maxdepth(i, count+1) for i in children.values())
     else:
-        return c
+        return count
 
 
 # http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#Python
